@@ -6,8 +6,10 @@ import numpy as np
 # 1
 df = pd.read_csv("medical_examination.csv", header = 0)
 
+
 # 2
-df['overweight'] = None
+df['overweight'] = df.apply(lambda x: 1 if x['weight'] / ( (x['height']/100) ** 2) > 25 else 0, axis = 1)
+
 
 # 3
 df["cholesterol"] = df["cholesterol"].astype(int)
@@ -34,23 +36,27 @@ def draw_cat_plot():
     vals = ["cholesterol", "gluc", "smoke", "alco", "active", "overweight"]
     ids = ["id", "age", "sex", "height", "weight", "ap_hi", "ap_lo", 'cardio']
     df_cat = pd.melt(df, 
-                     id_vars = 'cardio', 
+                     id_vars = ('id','cardio'), 
                      value_vars = vals)
 
 
     # 6
-    df_cat = df_cat.groupby(["cardio", "variable"]).count()
+    df_cat = df_cat.groupby(["cardio", "variable","value"]).count()
     df_cat = df_cat.reset_index()
     
     # 7
-    df_cat["value"] = pd.to_numeric(df_cat["value"] )
-
+    df_cat.rename(columns = {'id':'counts'}, inplace=True )
+    
     # 8
     fig = sns.catplot(data = df_cat, 
                       x = "variable", 
-                      y = "value",
-                      hue = "cardio", 
+                      y = "counts",
+                      hue = "value", 
+                      col = "cardio",
                       kind= "bar")
+    
+    fig.savefig('catplot.png')
+    
     return fig
 
 
@@ -60,19 +66,17 @@ def draw_heat_map():
     df_heat = df[ (df['ap_lo'] <= df['ap_hi']) & (df['height'] >= df['height'].quantile(0.025)) & (df.weight <= df.weight.quantile(0.975)) & (df.weight >= df.weight.quantile(0.025)) & ( df.height <= df.height.quantile(0.975)) ]
 
     # 12
-    corr = df_heat.corr()
+    corr = df_heat.corr(method = 'pearson')
 
     # 13
-    mask = None
-
+    mask = np.triu(corr)
 
 
     # 14
-    fig, ax = None
+    fig, ax = plt.subplots()
 
     # 15
-
-
+    sns.heatmap(corr[mask])
 
     # 16
     fig.savefig('heatmap.png')
