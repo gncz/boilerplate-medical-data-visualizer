@@ -6,10 +6,8 @@ import numpy as np
 # 1
 df = pd.read_csv("medical_examination.csv", header = 0)
 
-
 # 2
 df['overweight'] = df.apply(lambda x: 1 if x['weight'] / ( (x['height']/100) ** 2) > 25 else 0, axis = 1)
-
 
 # 3
 df["cholesterol"] = df["cholesterol"].astype(int)
@@ -27,9 +25,6 @@ df["cholesterol"] = df['cholesterol'].map( lambda x:1 if x>1 else 0 )
 # 4
 sns.catplot( data= df, x= "sex", y= "height")
 
-
-
-df.info()
 
 def draw_cat_plot():
     # 5
@@ -69,17 +64,16 @@ def draw_heat_map():
     corr = df_heat.corr(method = 'pearson')
 
     # 13
-    mask = np.triu(corr)
-
+    mask = np.tril(np.ones_like(corr, dtype='bool'))
 
     # 14
     fig, ax = plt.subplots()
 
     # 15
-    sns.heatmap(corr[mask])
-
+    sns.heatmap(data= corr.where(mask), annot = True)
+    
     # 16
-    fig.savefig('heatmap.png')
+    plt.savefig('heatmap.png')
     return fig
 
 
