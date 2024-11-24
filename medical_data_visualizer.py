@@ -16,6 +16,7 @@ df["gluc"] = df["gluc"].astype(int)
 
 #data wrangling for gluc
 df.loc[df["gluc"]==1, "gluc"] = 0  
+
 df.loc[df["gluc"]> 1, "gluc"] = 1 
 
 #data wrangling for cholesterol , experimenting with mapping
@@ -57,6 +58,7 @@ def draw_cat_plot():
 
 # 10
 def draw_heat_map():
+    
     # 11
     df_heat = df[ (df['ap_lo'] <= df['ap_hi']) & (df['height'] >= df['height'].quantile(0.025)) & (df.weight <= df.weight.quantile(0.975)) & (df.weight >= df.weight.quantile(0.025)) & ( df.height <= df.height.quantile(0.975)) ]
 
@@ -68,13 +70,11 @@ def draw_heat_map():
 
     # 14
     fig, ax = plt.subplots()
-
+    
     # 15
-    sns.heatmap(data= corr.where(mask), annot = True)
+    fig = sns.heatmap(data = corr.where(mask), annot = True)
     
     # 16
-    plt.savefig('heatmap.png')
+    fig.savefig('heatmap.png')
+    
     return fig
-
-
-draw_cat_plot()
