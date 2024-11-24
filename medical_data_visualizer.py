@@ -41,12 +41,12 @@ def draw_cat_plot():
     df_cat = df_cat.reset_index()
     
     # 7
-    df_cat.rename(columns = {'id':'counts'}, inplace=True )
+    df_cat.rename(columns = {'id':'total'}, inplace=True )
     
     # 8
     fig = sns.catplot(data = df_cat, 
                       x = "variable", 
-                      y = "counts",
+                      y = "total",
                       hue = "value", 
                       col = "cardio",
                       kind= "bar")
@@ -72,7 +72,10 @@ def draw_heat_map():
     fig, ax = plt.subplots()
     
     # 15
-    fig = sns.heatmap(data = corr.where(mask), annot = True)
+    sns.heatmap(data = corr.where(mask), 
+                annot = True, 
+                cmap = 'coolwarm',
+                ax = ax )
     
     # 16
     fig.savefig('heatmap.png')
